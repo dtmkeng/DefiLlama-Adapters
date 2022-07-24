@@ -755,14 +755,37 @@ async function transformOasisAddress() {
   return transformOasisAddressBase;
 }
 function fixBscBalances(balances) {
-  if (balances["bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C"]) {
-    sdk.util.sumSingleBalance(
-      balances,
-      "anchorust",
-      Number(balances["bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C"]) /
-      10 ** 6
-    );
+  const mapping = {
+    "0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C": {
+      coingeckoId: "anchorust",
+      decimals: 6
+    },
+    "0x316622977073BBC3dF32E7d2A9B3c77596a0a603": {
+      coingeckoId: "brz",
+      decimals: 18
+    },
+    "0x71be881e9C5d4465B3FfF61e89c6f3651E69B5bb": {
+      coingeckoId: "brz",
+      decimals: 4
+    },
+    "0xBb1Aa6e59E5163D8722a122cd66EBA614b59df0d": {
+      coingeckoId: "binancecoin",
+      decimals: 18
+    },
+    "0xDA279B4a038B2C10792178d77911627a98eeB3f8": {
+      coingeckoId: "binancecoin",
+      decimals: 18
+    },
+    "0x6DEdCEeE04795061478031b1DfB3c1ddCA80B204": {
+      coingeckoId: "binancecoin",
+      decimals: 18
+    },
+    "0x204992f7fCBC4c0455d7Fec5f712BeDd98E7d6d6": {
+      coingeckoId: "bitcoin",
+      decimals: 18
+    }
   }
+  return fixBalances(balances, mapping);
 }
 function fixOasisBalances(balances) {
   ["oasis-network", "wrapped-rose"].forEach(key => {
