@@ -4,7 +4,7 @@ const sdk = require("@defillama/sdk");
 const factoryAbi = require("./factory-abi.json");
 const { default: BigNumber } = require("bignumber.js");
 const { fixBscBalances } = require('../helper/portedTokens')
-const factoryAddress = "0xf65bed27e96a367c61e0e06c54e14b16b84a5870";
+const registryAddress = "0x266Bb386252347b03C7B6eB37F950f476D7c3E63";
 const balanceAbi = {
   "stateMutability": "view",
   "type": "function",
@@ -100,11 +100,11 @@ const filterAbiByName = (list, name) => list.filter((e) => e.name === name)[0];
 
 async function tvlbsc(time, block) {
   const chain = "bsc";
-  const poolAddresses = await listPoolAddresses(chain, block, factoryAddress);
+  const poolAddresses = await listPoolAddresses(chain, block, registryAddress);
   const poolCoins = (
     await sdk.api.abi.multiCall({
       calls: poolAddresses.map((address) => ({
-        target: factoryAddress,
+        target: registryAddress,
         params: address,
       })),
       abi: filterAbiByName(factoryAbi, "get_coins"),
@@ -119,7 +119,7 @@ async function tvlbsc(time, block) {
   const poolBalances = (
     await sdk.api.abi.multiCall({
       calls: poolAddresses.map((address) => ({
-        target: factoryAddress,
+        target: registryAddress,
         params: address,
       })),
       abi: filterAbiByName(factoryAbi, "get_balances"),
@@ -157,11 +157,11 @@ async function tvlbsc(time, block) {
   return fixBscBalances(coinsBalance);
 }
 
-const listPoolAddresses = async (chain, block, factoryAddress, isBasePool=false) => {
+const listPoolAddresses = async (chain, block, registryAddress, isBasePool=false) => {
   const prefix = isBasePool ? "base_" : "";
   const numOfPools = (
     await sdk.api.abi.call({
-      target: factoryAddress,
+      target: registryAddress,
       abi: filterAbiByName(factoryAbi, `${prefix}pool_count`),
       block,
       chain,
@@ -169,7 +169,7 @@ const listPoolAddresses = async (chain, block, factoryAddress, isBasePool=false)
   ).output;
   const poolAddressesCalls = [];
   for (let i = 0; i < numOfPools; i++) {
-    poolAddressesCalls.push({ target: factoryAddress, params: i });
+    poolAddressesCalls.push({ target: registryAddress, params: i });
   }
   return (
     await sdk.api.abi.multiCall({
